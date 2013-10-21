@@ -10,7 +10,7 @@ package
 		public function ZMenu()
 		{
 			super();
-			_buttonIndex = 0;
+			reset();
 		}
 		
 		/**
@@ -83,6 +83,13 @@ package
 		 */
 		public function select():void {
 			button.select();
+		}
+		
+		/**
+		 * Reset the cursed button to be the first.
+		 */
+		public function reset():void {
+			_buttonIndex = 0;
 		}
 	}
 }

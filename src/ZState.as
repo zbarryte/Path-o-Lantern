@@ -7,6 +7,7 @@ package
 	public class ZState extends FlxState
 	{
 		private var isControllable:Boolean;
+		private var isPlayable:Boolean;
 		
 		public function ZState()
 		{
@@ -22,7 +23,10 @@ package
 		override public function create():void
 		{
 			createObjects();
-			setUpState();
+			
+			enableControls();
+			resume();
+			
 			addDebugLayer();
 		}
 		
@@ -49,13 +53,6 @@ package
 		}
 		
 		/**
-		 * Initializes private vars.
-		 */
-		private function setUpState():void {
-			enableControls();
-		}
-		
-		/**
 		 * Enables control input on state, provided all controls are in <code>updateControls</code>
 		 */
 		public function enableControls():void {
@@ -69,18 +66,59 @@ package
 			isControllable = false;
 		}
 		
+		/**
+		 * Enables control input on state, provided all controls are in <code>updatePlay</code>
+		 */
+		public function resume():void {
+			isPlayable = true;
+		}
+		
+		/**
+		 * Disables control input on state, provided all controls are in <code>updatePlay</code>
+		 */ 
+		public function pause():void {
+			isPlayable = false;
+		}
+		
+		/**
+		 * Contains some update logic.
+		 * Overriding this function will obfuscate the logic unless you call <code>super</code>
+		 */
 		override public function update():void {
-			super.update();
-			if (isControllable) {
-				updateControls();
+			if (isPlayable) {
+				super.update();
+				updatePlay();
+				if (isControllable) {
+					updateControls();
+				}
+			} else {
+				updatePause();
 			}
 		}
 		
 		/**
+		 * Called when playing.
+		 * Overide this function to specify play.
+		 * This can be turned on and off using <code>resume</code>,<code>pause</code>
+		 */
+		protected function updatePlay():void {
+			// implemented by children
+		}
+		
+		/**
 		 * Override this function to specify controls.
-		 * This can be toggled on and off using <code>enableControls</code>,<code>disableControls</code>
+		 * This can be turned on and off using <code>enableControls</code>,<code>disableControls</code>
 		 */
 		protected function updateControls():void {
+			// implemented by children
+		}
+		
+		/**
+		 * Called when not playing.
+		 * Override this function to specify updates while paused.
+		 * This can be turned on and off using <code>pause</code>,<code>resume</code>
+		 */
+		protected function updatePause():void {
 			// implemented by children
 		}
 		

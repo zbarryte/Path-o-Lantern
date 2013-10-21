@@ -28,7 +28,7 @@ package
 			
 			// START
 			var callbackStart:Function = function():void {
-				FlxG.log("START");
+				switchToStateWithFade(StPlay,kFadeDuration,kFadeColor);
 			};
 			var txtStart:String = "START";
 			var btnStart:BtnBasic = new BtnBasic(callbackStart,txtStart);
@@ -91,6 +91,8 @@ package
 		
 		private function drawHoleInDarknessOverButton():void {
 			var tmpPoint:FlxPoint = new FlxPoint(mnu.button.x+mnu.button.width/2.0,mnu.button.y+mnu.button.height/2.0);
+			
+			darkness.fillHoles();
 			darkness.drawHole(tmpPoint,mnu.button.width/3.0);
 		}
 	}

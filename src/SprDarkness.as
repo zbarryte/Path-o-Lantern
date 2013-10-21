@@ -21,9 +21,11 @@ package
 			_pixelsOriginal = _pixels;
 		}
 		
-		public function drawHole(tmpPoint:FlxPoint,tmpRadius:Number):void {
-			
+		public function fillHoles():void {
 			_pixels = _pixelsOriginal.clone();
+		}
+		
+		public function drawHole(tmpPoint:FlxPoint,tmpRadius:Number):void {
 			
 			var tmpGfx:Graphics = FlxG.flashGfx;
 			tmpGfx.clear();
