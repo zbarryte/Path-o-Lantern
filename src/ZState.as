@@ -1,8 +1,8 @@
 package
 {
+	import org.flixel.FlxG;
 	import org.flixel.FlxState;
 	import org.flixel.FlxText;
-	import org.flixel.FlxG;
 	
 	public class ZState extends FlxState
 	{
@@ -82,6 +82,13 @@ package
 		 */
 		protected function updateControls():void {
 			// implemented by children
+		}
+		
+		public function switchToStateWithFade(tmpClass:Class,tmpDuration:Number=0,tmpColor:uint=0x00000000):void {
+			var tmpCallback:Function = function():void {
+				FlxG.switchState(new tmpClass());
+			};
+			FlxG.camera.fade(tmpColor,tmpDuration,tmpCallback);
 		}
 	}
 }
