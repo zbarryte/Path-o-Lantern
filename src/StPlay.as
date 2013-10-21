@@ -1,6 +1,7 @@
 package
 {
 	import org.flixel.FlxG;
+	import org.flixel.FlxTilemap;
 	
 	public class StPlay extends ZState
 	{
@@ -9,16 +10,33 @@ package
 		
 		private var mnuPause:ZMenu;
 		
+		private var lvlFunc:FlxTilemap;
+		private var pumpkin:SprPumpkin;
+		
 		public function StPlay()
 		{
 			super();
 		}
 		
 		override protected function createObjects():void {
-			initPauseMenu();
+			initFunctionalLevel();
+			addPumpkin();
+			addPauseMenu();
 		}
 		
-		private function initPauseMenu():void {
+		
+		private function initFunctionalLevel():void {
+			lvlFunc = Glob.leveler.levelFunc;
+			GLeveler.center(lvlFunc);
+			if (Glob.kDebugOn) {add(lvlFunc);}
+		}
+		
+		private function addPumpkin():void {
+			pumpkin = GLeveler.groupFromSpawn(GLeveler.kArraySpawnPumpkin,SprPumpkin,lvlFunc).members[0];
+			add(pumpkin);
+		}
+		
+		private function addPauseMenu():void {
 			mnuPause = new ZMenu();
 			
 			var margin:int = 2;
@@ -45,7 +63,8 @@ package
 			add(mnuPause);
 		}
 		
-		override protected function updateControls():void {
+		override protected function updateControls():void
+		{				
 			if (Glob.controller.justPressed(GController.pause)) {
 				pause();
 			}
@@ -55,8 +74,8 @@ package
 			
 		}
 		
-		override protected function updatePause():void {
-			
+		override protected function updatePause():void
+		{
 			if (Glob.controller.justPressed(GController.pause)) {
 				resume();
 			}

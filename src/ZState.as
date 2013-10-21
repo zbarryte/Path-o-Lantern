@@ -23,11 +23,10 @@ package
 		override public function create():void
 		{
 			createObjects();
-			
-			enableControls();
-			resume();
-			
 			addDebugLayer();
+			
+			resume();
+			enableControls();
 		}
 		
 		/**

@@ -90,6 +90,11 @@ package
 		 */
 		public function reset():void {
 			_buttonIndex = 0;
+			if (!isEmpty()) {button.curse();}
+			for (var i:uint = 1; i < length; i++) {
+				var tmpBtn:ZButton = members[i];
+				tmpBtn.uncurse();
+			}
 		}
 	}
 }
