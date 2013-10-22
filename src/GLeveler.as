@@ -1,13 +1,15 @@
 package
 {
 	import org.flixel.FlxG;
-	import org.flixel.FlxPoint;
-	import org.flixel.FlxTilemap;
 	import org.flixel.FlxGroup;
 	import org.flixel.FlxObject;
+	import org.flixel.FlxPoint;
+	import org.flixel.FlxTilemap;
 	
 	public class GLeveler
 	{
+		public static const kTileLength:uint = 16;
+		
 		public var lvlNum:uint;
 		private const lvlNumTopCap:uint = 22;
 		private function get lvlPercentageToMaxDifficulty():Number {
@@ -16,6 +18,7 @@ package
 		}
 		
 		public static const kArraySpawnPumpkin:Array = [2];
+		public static const kArraySpawnWall:Array = [1];
 		
 		private const kSpawnFuncEmpty:uint = 1;
 		private const kSpawnFuncWall:uint = 0;
@@ -91,7 +94,7 @@ package
 			var lvlData:Array = generateLvlData();
 			
 			var tmpLvlCSV:String = FlxTilemap.arrayToCSV(lvlData,widthInTiles,true);
-			tmpTilemap.loadMap(tmpLvlCSV,kTilesetFuncSheet,16,16);
+			tmpTilemap.loadMap(tmpLvlCSV,kTilesetFuncSheet,kTileLength,kTileLength);
 			
 			return tmpTilemap;
 		}
@@ -183,18 +186,22 @@ package
 			if (tmpStart.x == tmpEnd.x) {
 				// up
 				if (tmpStart.y > tmpEnd.y) {
-					for (i = tmpEnd.y; i < tmpStart.y; i++) {
+					for (i = tmpEnd.y; i < tmpStart.y+1; i++) {
 						tmpPoint = new FlxPoint(tmpStart.x,i);
 						tmpArrayIndex = arrayIndexForDigBoxCoordsCenter(tmpPoint.x,tmpPoint.y);
+						tmpArray[tmpArrayIndex+1] = tmpSpawn;
+						tmpArray[tmpArrayIndex-1] = tmpSpawn;
 						if (tmpArray[tmpArrayIndex] == kSpawnFuncPumpkin) {continue;}
 						tmpArray[tmpArrayIndex] = tmpSpawn;
 					}
 				}
 				// down
 				else if (tmpStart.y < tmpEnd.y) {
-					for (i = tmpStart.y; i < tmpEnd.y; i++) {
+					for (i = tmpStart.y; i < tmpEnd.y+1; i++) {
 						tmpPoint = new FlxPoint(tmpEnd.x,i);
 						tmpArrayIndex = arrayIndexForDigBoxCoordsCenter(tmpPoint.x,tmpPoint.y);
+						tmpArray[tmpArrayIndex+1] = tmpSpawn;
+						tmpArray[tmpArrayIndex-1] = tmpSpawn;
 						if (tmpArray[tmpArrayIndex] == kSpawnFuncPumpkin) {continue;}
 						tmpArray[tmpArrayIndex] = tmpSpawn;
 					}
@@ -208,16 +215,20 @@ package
 				
 				// left
 				if (tmpStart.x > tmpEnd.x) {
-					for (i = tmpArrayEnd + 1; i < tmpArrayStart; i++) {
+					for (i = tmpArrayEnd; i < tmpArrayStart+1; i++) {
 						if (tmpArray[i] == kSpawnFuncPumpkin) {continue;}
 						tmpArray[i] = tmpSpawn;
+						tmpArray[i+widthInTiles] = tmpSpawn;
+						tmpArray[i-widthInTiles] = tmpSpawn;
 					}
 				}
 				// right
 				else if (tmpStart.x < tmpEnd.x) {
-					for (i = tmpArrayStart + 1; i < tmpArrayEnd; i++) {
+					for (i = tmpArrayStart; i < tmpArrayEnd+1; i++) {
 						if (tmpArray[i] == kSpawnFuncPumpkin) {continue;}
 						tmpArray[i] = tmpSpawn;
+						tmpArray[i+widthInTiles] = tmpSpawn;
+						tmpArray[i-widthInTiles] = tmpSpawn;
 					}
 				}
 			}

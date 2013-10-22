@@ -1,6 +1,7 @@
 package
 {
 	import org.flixel.FlxG;
+	import org.flixel.FlxGroup;
 	import org.flixel.FlxTilemap;
 	
 	public class StPlay extends ZState
@@ -11,6 +12,7 @@ package
 		private var mnuPause:ZMenu;
 		
 		private var lvlFunc:FlxTilemap;
+		private var wallGroup:FlxGroup;
 		private var pumpkin:SprPumpkin;
 		
 		public function StPlay()
@@ -20,6 +22,7 @@ package
 		
 		override protected function createObjects():void {
 			initFunctionalLevel();
+			addWalls();
 			addPumpkin();
 			addPauseMenu();
 		}
@@ -29,6 +32,11 @@ package
 			lvlFunc = Glob.leveler.levelFunc;
 			GLeveler.center(lvlFunc);
 			if (Glob.kDebugOn) {add(lvlFunc);}
+		}
+		
+		private function addWalls():void {
+			wallGroup = GLeveler.groupFromSpawn(GLeveler.kArraySpawnWall,SprWall,lvlFunc);
+			add(wallGroup);
 		}
 		
 		private function addPumpkin():void {
@@ -68,10 +76,24 @@ package
 			if (Glob.controller.justPressed(GController.pause)) {
 				pause();
 			}
+			
+			if (Glob.controller.pressedAfter(GController.left,GController.right)) {
+				pumpkin.moveLeft();
+			}
+			else if (Glob.controller.pressedAfter(GController.right,GController.left)) {
+				pumpkin.moveRight();
+			}
+			
+			if (Glob.controller.pressedAfter(GController.up,GController.down)) {
+				pumpkin.moveUp();
+			}
+			else if (Glob.controller.pressedAfter(GController.down,GController.up)) {
+				pumpkin.moveDown();
+			}
 		}
 		
 		override protected function updatePlay():void {
-			
+			FlxG.collide(wallGroup,pumpkin);
 		}
 		
 		override protected function updatePause():void

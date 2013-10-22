@@ -51,6 +51,20 @@ package
 			}
 		}
 		
+		override public function update():void {
+			super.update();
+			updateMechanics();
+			updateAV();
+		}
+		
+		protected function updateMechanics():void {
+			// implemented by children
+		}
+		
+		protected function updateAV():void {
+			// implemented by children
+		}
+		
 		override public function postUpdate():void {
 			super.postUpdate();
 			for (var i:uint = 0; i < _children.length; i++) {
