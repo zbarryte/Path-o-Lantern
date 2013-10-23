@@ -3,6 +3,7 @@ package
 	import org.flixel.FlxG;
 	import org.flixel.FlxGroup;
 	import org.flixel.FlxTilemap;
+	import org.flixel.FlxCamera;
 	
 	public class StPlay extends ZState
 	{
@@ -13,6 +14,7 @@ package
 		
 		private var lvlFunc:FlxTilemap;
 		private var wallGroup:FlxGroup;
+		private var houseGroup:FlxGroup;
 		private var pumpkin:SprPumpkin;
 		
 		public function StPlay()
@@ -23,8 +25,10 @@ package
 		override protected function createObjects():void {
 			initFunctionalLevel();
 			addWalls();
+			addHouse();
 			addPumpkin();
 			addPauseMenu();
+			setupCamera();
 		}
 		
 		
@@ -37,6 +41,11 @@ package
 		private function addWalls():void {
 			wallGroup = GLeveler.groupFromSpawn(GLeveler.kArraySpawnWall,SprWall,lvlFunc);
 			add(wallGroup);
+		}
+		
+		private function addHouse():void {
+			houseGroup = GLeveler.groupFromSpawn(GLeveler.kArraySpawnHouse,SprHouse,lvlFunc);
+			add(houseGroup);
 		}
 		
 		private function addPumpkin():void {
@@ -71,6 +80,10 @@ package
 			add(mnuPause);
 		}
 		
+		private function setupCamera():void {
+			FlxG.camera.follow(pumpkin,FlxCamera.STYLE_TOPDOWN);
+		}
+		
 		override protected function updateControls():void
 		{				
 			if (Glob.controller.justPressed(GController.pause)) {
@@ -94,6 +107,16 @@ package
 		
 		override protected function updatePlay():void {
 			FlxG.collide(wallGroup,pumpkin);
+			checkForPumpkinOverlappingHouse();
+		}
+		
+		private function checkForPumpkinOverlappingHouse():void {
+			for (var i:uint = 0; i < houseGroup.length; i++) {
+				var tmpHouse:SprHouse = houseGroup.members[i];
+				if (tmpHouse.overlaps(pumpkin)) {
+					win();
+				}
+			}
 		}
 		
 		override protected function updatePause():void
@@ -121,6 +144,11 @@ package
 		override public function resume():void {
 			mnuPause.visible = false;
 			super.resume();
+		}
+		
+		private function win():void {
+			Glob.leveler.lvlNum ++;
+			switchToStateWithFade(StPlay,kFadeDuration,kFadeColor);
 		}
 	}
 }

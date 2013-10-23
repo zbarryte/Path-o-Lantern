@@ -45,13 +45,22 @@ package
 			btnOptions.placeBelowSprite(btnStart,margin);
 			mnu.addButton(btnOptions);
 			
+			// HIGH SCORES
+			var callbackScores:Function = function():void {
+				FlxG.log("HIGH SCORES");
+			};
+			var txtScores:String = "HIGH SCORES";
+			var btnScores:BtnBasic = new BtnBasic(callbackScores,txtScores);
+			btnScores.placeBelowSprite(btnOptions,margin);
+			mnu.addButton(btnScores);
+			
 			// CONTROLS
 			var callbackControls:Function = function():void {
 				FlxG.log("CONTROLS");
 			};
 			var txtControls:String = "Controls";
 			var btnControls:BtnBasic = new BtnBasic(callbackControls,txtControls);
-			btnControls.placeBelowSprite(btnOptions,margin);
+			btnControls.placeBelowSprite(btnScores,margin);
 			mnu.addButton(btnControls);
 			
 			// CREDITS

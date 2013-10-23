@@ -17,13 +17,14 @@ package
 			return 1.0 - Number(lvlNumTopCap - lvlNum)/Number(lvlNumTopCap);
 		}
 		
-		public static const kArraySpawnPumpkin:Array = [2];
+		public static const kArraySpawnPumpkin:Array = [kSpawnFuncPumpkin];
 		public static const kArraySpawnWall:Array = [1];
+		public static const kArraySpawnHouse:Array = [kSpawnFuncHouse];
 		
-		private const kSpawnFuncEmpty:uint = 1;
-		private const kSpawnFuncWall:uint = 0;
-		private const kSpawnFuncPumpkin:uint = 2;
-		private const kSpawnFuncHouse:uint = 3;
+		private static const kSpawnFuncEmpty:uint = 1;
+		private static const kSpawnFuncWall:uint = 0;
+		private static const kSpawnFuncPumpkin:uint = 2;
+		private static const kSpawnFuncHouse:uint = 3;
 		
 		[Embed(source="assets/tileset_functional.png")] private const kTilesetFuncSheet:Class;
 		
@@ -114,22 +115,14 @@ package
 			var tmpNextPoint:FlxPoint;
 			
 			// dig this many times
-			for (var i:uint = 0; i < widthInTiles*4; i++) {
+			var tmpMaxDigs:uint = widthInTiles*4; // this is arbitrary
+			for (var i:uint = 0; i < tmpMaxDigs; i++) {
 				tmpNextPoint = nextRandomDigPointInRange(tmpPoint,tmpArray);
-				putSpawnAtPointInArray(tmpArray,kSpawnFuncEmpty,tmpNextPoint);
 				putSpawnPointsBetweenCenterPointsInArray(tmpArray,kSpawnFuncEmpty,tmpPoint,tmpNextPoint);
+				var tmpSpawn:uint = (i >= tmpMaxDigs-1) ? kSpawnFuncHouse : kSpawnFuncEmpty;
+				putSpawnAtPointInArray(tmpArray,tmpSpawn,tmpNextPoint);
 				tmpPoint = tmpNextPoint;
 			}
-			
-			/*
-			//FlxG.log(tmpPoint.x+','+tmpPoint.y);
-			putSpawnAtPointInArray(tmpArray,kSpawnFuncPumpkin,tmpPoint0);
-			var tmpPoint1:FlxPoint = nextRandomDigPointInRange(tmpPoint0);
-			//FlxG.log(tmpPoint.x+','+tmpPoint.y);
-			putSpawnAtPointInArray(tmpArray,kSpawnFuncEmpty,tmpPoint1);
-			
-			putSpawnPointsBetweenCenterPointsInArray(tmpArray,kSpawnFuncEmpty,tmpPoint0,tmpPoint1);
-			*/
 			return tmpArray;
 		}
 		
@@ -172,8 +165,28 @@ package
 		
 		private function putSpawnAtPointInArray(tmpArray:Array,tmpSpawn:uint,tmpPoint:FlxPoint):void {
 			var tmpArrayIndex:uint = arrayIndexForDigBoxCoordsCenter(tmpPoint.x,tmpPoint.y);
-			if (tmpArray[tmpArrayIndex] == kSpawnFuncPumpkin) {return;}
+			if (tmpArray[tmpArrayIndex] == kSpawnFuncPumpkin || tmpArray[tmpArrayIndex] == kSpawnFuncHouse) {return;}
 			tmpArray[tmpArrayIndex] = tmpSpawn;
+			
+			tmpSpawn = kSpawnFuncEmpty;
+			// also fill the square around it, this is messy
+			var tmpOtherIndex:uint;
+			tmpOtherIndex = tmpArrayIndex + 1;
+			tmpArray[tmpOtherIndex] = tmpSpawn;
+			tmpOtherIndex = tmpArrayIndex - 1;
+			tmpArray[tmpOtherIndex] = tmpSpawn;
+			tmpOtherIndex = tmpArrayIndex + widthInTiles;
+			tmpArray[tmpOtherIndex] = tmpSpawn;
+			tmpOtherIndex = tmpArrayIndex - widthInTiles;
+			tmpArray[tmpOtherIndex] = tmpSpawn;
+			tmpOtherIndex = tmpArrayIndex + widthInTiles + 1;
+			tmpArray[tmpOtherIndex] = tmpSpawn;
+			tmpOtherIndex = tmpArrayIndex + widthInTiles - 1;
+			tmpArray[tmpOtherIndex] = tmpSpawn;
+			tmpOtherIndex = tmpArrayIndex - widthInTiles + 1;
+			tmpArray[tmpOtherIndex] = tmpSpawn;
+			tmpOtherIndex = tmpArrayIndex - widthInTiles - 1;
+			tmpArray[tmpOtherIndex] = tmpSpawn;
 		}
 		
 		private function putSpawnPointsBetweenCenterPointsInArray(tmpArray:Array,tmpSpawn:uint,tmpStart:FlxPoint,tmpEnd:FlxPoint):void {
@@ -186,7 +199,7 @@ package
 			if (tmpStart.x == tmpEnd.x) {
 				// up
 				if (tmpStart.y > tmpEnd.y) {
-					for (i = tmpEnd.y; i < tmpStart.y+1; i++) {
+					for (i = tmpEnd.y; i < tmpStart.y; i++) {
 						tmpPoint = new FlxPoint(tmpStart.x,i);
 						tmpArrayIndex = arrayIndexForDigBoxCoordsCenter(tmpPoint.x,tmpPoint.y);
 						tmpArray[tmpArrayIndex+1] = tmpSpawn;
@@ -197,7 +210,7 @@ package
 				}
 				// down
 				else if (tmpStart.y < tmpEnd.y) {
-					for (i = tmpStart.y; i < tmpEnd.y+1; i++) {
+					for (i = tmpStart.y; i < tmpEnd.y; i++) {
 						tmpPoint = new FlxPoint(tmpEnd.x,i);
 						tmpArrayIndex = arrayIndexForDigBoxCoordsCenter(tmpPoint.x,tmpPoint.y);
 						tmpArray[tmpArrayIndex+1] = tmpSpawn;
@@ -215,7 +228,7 @@ package
 				
 				// left
 				if (tmpStart.x > tmpEnd.x) {
-					for (i = tmpArrayEnd; i < tmpArrayStart+1; i++) {
+					for (i = tmpArrayEnd; i < tmpArrayStart; i++) {
 						if (tmpArray[i] == kSpawnFuncPumpkin) {continue;}
 						tmpArray[i] = tmpSpawn;
 						tmpArray[i+widthInTiles] = tmpSpawn;
@@ -224,7 +237,7 @@ package
 				}
 				// right
 				else if (tmpStart.x < tmpEnd.x) {
-					for (i = tmpArrayStart; i < tmpArrayEnd+1; i++) {
+					for (i = tmpArrayStart; i < tmpArrayEnd; i++) {
 						if (tmpArray[i] == kSpawnFuncPumpkin) {continue;}
 						tmpArray[i] = tmpSpawn;
 						tmpArray[i+widthInTiles] = tmpSpawn;
