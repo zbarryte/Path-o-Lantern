@@ -113,18 +113,27 @@ package
 			var tmpPoint:FlxPoint = randomPointInRange();
 			putSpawnAtPointInArray(tmpArray,kSpawnFuncPumpkin,tmpPoint);
 			var tmpNextPoint:FlxPoint;
+			var tmpPtArray:Array;
 			
 			// dig this many times
-			var tmpMaxDigs:uint = widthInDigBoxes*heightInDigBoxes; // this is arbitrary
+			var tmpMaxDigs:uint = widthInDigBoxes*heightInDigBoxes/2.0; // this is arbitrary
 			for (var i:uint = 0; i < tmpMaxDigs; i++) {
-				var tmpPtArray:Array = nextRandomDigPointInRange(tmpPoint,tmpArray);
+				tmpPtArray = nextRandomDigPointInRange(tmpPoint,tmpArray);
 				tmpPoint = tmpPtArray[0];
 				tmpNextPoint = tmpPtArray[1];
 				putSpawnPointsBetweenCenterPointsInArray(tmpArray,kSpawnFuncEmpty,tmpPoint,tmpNextPoint);
 				var tmpSpawn:uint = (i >= tmpMaxDigs-1) ? kSpawnFuncHouse : kSpawnFuncEmpty;
 				putSpawnAtPointInArray(tmpArray,tmpSpawn,tmpNextPoint);
+				//putSpawnAtPointInArray(tmpArray,kSpawnFuncEmpty,tmpNextPoint);
 				tmpPoint = tmpNextPoint;
 			}
+			/*
+			tmpPtArray = nextRandomDigPointInRange(tmpPoint,tmpArray);
+			tmpPoint = tmpPtArray[0];
+			tmpNextPoint = tmpPtArray[1];
+			putSpawnPointsBetweenCenterPointsInArray(tmpArray,kSpawnFuncEmpty,tmpPoint,tmpNextPoint);
+			putSpawnAtPointInArray(tmpArray,kSpawnFuncHouse,tmpNextPoint);*/
+			
 			return tmpArray;
 		}
 		
@@ -208,7 +217,7 @@ package
 						tmpArrayIndex = arrayIndexForDigBoxCoordsCenter(tmpPoint.x,tmpPoint.y);
 						tmpArray[tmpArrayIndex+1] = tmpSpawn;
 						tmpArray[tmpArrayIndex-1] = tmpSpawn;
-						if (tmpArray[tmpArrayIndex] == kSpawnFuncPumpkin || tmpArray[i] == kSpawnFuncHouse) {continue;}
+						if (tmpArray[tmpArrayIndex] == kSpawnFuncPumpkin || tmpArray[tmpArrayIndex] == kSpawnFuncHouse) {continue;}
 						tmpArray[tmpArrayIndex] = tmpSpawn;
 					}
 				}
@@ -219,7 +228,7 @@ package
 						tmpArrayIndex = arrayIndexForDigBoxCoordsCenter(tmpPoint.x,tmpPoint.y);
 						tmpArray[tmpArrayIndex+1] = tmpSpawn;
 						tmpArray[tmpArrayIndex-1] = tmpSpawn;
-						if (tmpArray[tmpArrayIndex] == kSpawnFuncPumpkin || tmpArray[i] == kSpawnFuncHouse) {continue;}
+						if (tmpArray[tmpArrayIndex] == kSpawnFuncPumpkin || tmpArray[tmpArrayIndex] == kSpawnFuncHouse) {continue;}
 						tmpArray[tmpArrayIndex] = tmpSpawn;
 					}
 				}
@@ -313,7 +322,6 @@ package
 				if (tmpArray[randArrayIndex] == kSpawnFuncEmpty) {
 					tmpPoint = randPoint;
 				}
-				FlxG.log(tmpPoint == null);
 			}
 			
 			return tmpPoint;

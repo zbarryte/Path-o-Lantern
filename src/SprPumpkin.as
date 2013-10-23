@@ -4,9 +4,9 @@ package
 	
 	public class SprPumpkin extends ZNode
 	{
-		private const kMoveAccel:Number = GLeveler.kTileLength*22;
+		private const kMoveAccel:Number = GLeveler.kTileLength*44;
 		private const kDrag:Number = kMoveAccel;
-		private const kVelMax:Number = GLeveler.kTileLength*5;
+		private const kVelMax:Number = GLeveler.kTileLength*11;
 		
 		private var isUp:Boolean;
 		private var isDown:Boolean;
