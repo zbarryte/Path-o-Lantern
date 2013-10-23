@@ -3,6 +3,7 @@ package
 	import org.flixel.FlxG;
 	import org.flixel.FlxState;
 	import org.flixel.FlxText;
+	import org.flixel.FlxPoint;
 	
 	public class ZState extends FlxState
 	{
@@ -47,6 +48,7 @@ package
 			var tmpDebugLabel:FlxText = new FlxText(0,0,FlxG.width);
 			tmpDebugLabel.text = "** DEBUG MODE **";
 			tmpDebugLabel.alignment = "center";
+			tmpDebugLabel.scrollFactor = new FlxPoint(0,0);
 			
 			add(tmpDebugLabel);
 		}

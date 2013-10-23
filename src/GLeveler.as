@@ -18,13 +18,13 @@ package
 		}
 		
 		public static const kArraySpawnPumpkin:Array = [kSpawnFuncPumpkin];
-		public static const kArraySpawnWall:Array = [1];
+		public static const kArraySpawnWall:Array = [kSpawnFuncWall];
 		public static const kArraySpawnHouse:Array = [kSpawnFuncHouse];
 		
-		private static const kSpawnFuncEmpty:uint = 1;
-		private static const kSpawnFuncWall:uint = 0;
-		private static const kSpawnFuncPumpkin:uint = 2;
-		private static const kSpawnFuncHouse:uint = 3;
+		private static const kSpawnFuncEmpty:uint = 2;
+		private static const kSpawnFuncWall:uint = 3;
+		private static const kSpawnFuncPumpkin:uint = 4;
+		private static const kSpawnFuncHouse:uint = 5;
 		
 		[Embed(source="assets/tileset_functional.png")] private const kTilesetFuncSheet:Class;
 		
@@ -115,9 +115,11 @@ package
 			var tmpNextPoint:FlxPoint;
 			
 			// dig this many times
-			var tmpMaxDigs:uint = widthInTiles*4; // this is arbitrary
+			var tmpMaxDigs:uint = widthInDigBoxes*heightInDigBoxes; // this is arbitrary
 			for (var i:uint = 0; i < tmpMaxDigs; i++) {
-				tmpNextPoint = nextRandomDigPointInRange(tmpPoint,tmpArray);
+				var tmpPtArray:Array = nextRandomDigPointInRange(tmpPoint,tmpArray);
+				tmpPoint = tmpPtArray[0];
+				tmpNextPoint = tmpPtArray[1];
 				putSpawnPointsBetweenCenterPointsInArray(tmpArray,kSpawnFuncEmpty,tmpPoint,tmpNextPoint);
 				var tmpSpawn:uint = (i >= tmpMaxDigs-1) ? kSpawnFuncHouse : kSpawnFuncEmpty;
 				putSpawnAtPointInArray(tmpArray,tmpSpawn,tmpNextPoint);
@@ -191,6 +193,8 @@ package
 		
 		private function putSpawnPointsBetweenCenterPointsInArray(tmpArray:Array,tmpSpawn:uint,tmpStart:FlxPoint,tmpEnd:FlxPoint):void {
 			
+			if (Math.abs(tmpStart.x-tmpEnd.x) > kNumTilesPerDigBox || Math.abs(tmpStart.y-tmpEnd.y) > kNumTilesPerDigBox) {return;}
+			
 			var i:uint;
 			var tmpPoint:FlxPoint;
 			var tmpArrayIndex:uint;
@@ -204,7 +208,7 @@ package
 						tmpArrayIndex = arrayIndexForDigBoxCoordsCenter(tmpPoint.x,tmpPoint.y);
 						tmpArray[tmpArrayIndex+1] = tmpSpawn;
 						tmpArray[tmpArrayIndex-1] = tmpSpawn;
-						if (tmpArray[tmpArrayIndex] == kSpawnFuncPumpkin) {continue;}
+						if (tmpArray[tmpArrayIndex] == kSpawnFuncPumpkin || tmpArray[i] == kSpawnFuncHouse) {continue;}
 						tmpArray[tmpArrayIndex] = tmpSpawn;
 					}
 				}
@@ -215,7 +219,7 @@ package
 						tmpArrayIndex = arrayIndexForDigBoxCoordsCenter(tmpPoint.x,tmpPoint.y);
 						tmpArray[tmpArrayIndex+1] = tmpSpawn;
 						tmpArray[tmpArrayIndex-1] = tmpSpawn;
-						if (tmpArray[tmpArrayIndex] == kSpawnFuncPumpkin) {continue;}
+						if (tmpArray[tmpArrayIndex] == kSpawnFuncPumpkin || tmpArray[i] == kSpawnFuncHouse) {continue;}
 						tmpArray[tmpArrayIndex] = tmpSpawn;
 					}
 				}
@@ -229,7 +233,7 @@ package
 				// left
 				if (tmpStart.x > tmpEnd.x) {
 					for (i = tmpArrayEnd; i < tmpArrayStart; i++) {
-						if (tmpArray[i] == kSpawnFuncPumpkin) {continue;}
+						if (tmpArray[i] == kSpawnFuncPumpkin || tmpArray[i] == kSpawnFuncHouse) {continue;}
 						tmpArray[i] = tmpSpawn;
 						tmpArray[i+widthInTiles] = tmpSpawn;
 						tmpArray[i-widthInTiles] = tmpSpawn;
@@ -238,7 +242,7 @@ package
 				// right
 				else if (tmpStart.x < tmpEnd.x) {
 					for (i = tmpArrayStart; i < tmpArrayEnd; i++) {
-						if (tmpArray[i] == kSpawnFuncPumpkin) {continue;}
+						if (tmpArray[i] == kSpawnFuncPumpkin || tmpArray[i] == kSpawnFuncHouse) {continue;}
 						tmpArray[i] = tmpSpawn;
 						tmpArray[i+widthInTiles] = tmpSpawn;
 						tmpArray[i-widthInTiles] = tmpSpawn;
@@ -253,7 +257,7 @@ package
 		 * Digs. Won't dig if it would go out of bounds to do so.
 		 * 
 		 */
-		private function nextRandomDigPointInRange(tmpPoint:FlxPoint,tmpArray:Array):FlxPoint {
+		private function nextRandomDigPointInRange(tmpPoint:FlxPoint,tmpArray:Array):Array {
 			
 			var returnPoint:FlxPoint = null;
 			
@@ -285,30 +289,31 @@ package
 					}
 				}
 				
-				/* incorrect implementation or something
 				if (isPointAlreadyDugInArray(returnPoint,tmpArray)) {
 					returnPoint = null;
 					tmpPoint = randomPointAlreadyDugInArray(tmpArray);
-				}*/
+				}
 			}
 			
-			return returnPoint;
+			return [tmpPoint,returnPoint];
 		}
 		
 		private function isPointAlreadyDugInArray(tmpPoint:FlxPoint,tmpArray:Array):Boolean {
+			if (tmpPoint == null) return false;
 			var tmpArrayIndex:uint = arrayIndexForDigBoxCoordsCenter(tmpPoint.x,tmpPoint.y);
-			return (tmpArray[tmpArrayIndex] == kSpawnFuncWall);
+			return (tmpArray[tmpArrayIndex] == kSpawnFuncEmpty);
 		}
 		
 		private function randomPointAlreadyDugInArray(tmpArray:Array):FlxPoint {
 			var tmpPoint:FlxPoint = null;
 			
 			while (tmpPoint == null) {
-				var randPoint:FlxPoint = randomPointInRange();
+				var randPoint:FlxPoint = randomPointInRange();			
 				var randArrayIndex:uint = arrayIndexForDigBoxCoordsCenter(randPoint.x,randPoint.y);
-				if (tmpArray[randArrayIndex] != kSpawnFuncWall) {
+				if (tmpArray[randArrayIndex] == kSpawnFuncEmpty) {
 					tmpPoint = randPoint;
 				}
+				FlxG.log(tmpPoint == null);
 			}
 			
 			return tmpPoint;
