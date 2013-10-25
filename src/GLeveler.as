@@ -47,6 +47,7 @@ package
 		 * Width of tile map, measured in tiles.
 		 */
 		private function get widthInTiles():uint {
+			FlxG.log(numTilesAcross);
 			return numTilesAcross;
 		}
 		
@@ -116,9 +117,7 @@ package
 		 */
 		private function generateLvlData():Array {
 			var tmpArray:Array = initArray();
-			//putSpawnAtEachCenterOfArray(tmpArray,kSpawnFuncHouse);
 			var tmpPoint:FlxPoint = randomPointInRange();
-			putSpawnAtPointInArray(tmpArray,kSpawnFuncPumpkin,tmpPoint);
 			var tmpNextPoint:FlxPoint;
 			var tmpPtArray:Array;
 			
@@ -128,28 +127,17 @@ package
 				tmpPoint = tmpPtArray[0];
 				tmpNextPoint = tmpPtArray[1];
 				putSpawnPointsBetweenCenterPointsInArray(tmpArray,kSpawnFuncEmpty,tmpPoint,tmpNextPoint);
-				var tmpSpawn:uint = (i >= maxDigs-1) ? kSpawnFuncHouse : kSpawnFuncEmpty;
-				putSpawnAtPointInArray(tmpArray,tmpSpawn,tmpNextPoint);
-				//putSpawnAtPointInArray(tmpArray,kSpawnFuncEmpty,tmpNextPoint);
+				putSpawnAtPointInArray(tmpArray,kSpawnFuncEmpty,tmpNextPoint);
 				tmpPoint = tmpNextPoint;
 			}
 			
-			
-			putSpawnAtPointInArray(tmpArray,kSpawnFuncHouse,new FlxPoint(0,0));
-			
-			/*
-			tmpPtArray = nextRandomDigPointInRange(tmpPoint,tmpArray);
-			tmpPoint = tmpPtArray[0];
-			tmpNextPoint = tmpPtArray[1];
-			putSpawnPointsBetweenCenterPointsInArray(tmpArray,kSpawnFuncEmpty,tmpPoint,tmpNextPoint);
-			putSpawnAtPointInArray(tmpArray,kSpawnFuncHouse,tmpNextPoint);*/
+			putSpawnInAnyEmpty(tmpArray,kSpawnFuncPumpkin);
+			putSpawnInAnyEmpty(tmpArray,kSpawnFuncHouse);
 			
 			return tmpArray;
 		}
 		
 		/**
-		 * Internal
-		 * 
 		 * Inits the array. Starts with wall tiles, so that it can be dug.
 		 * 
 		 */
@@ -161,27 +149,40 @@ package
 			return tmpArray;
 		}
 		
+		/**
+		 * Picks a random dig box column.
+		 */
 		private function randomXInRange():uint {
 			var tmpX:uint = Math.random()*widthInDigBoxes;
 			return tmpX*kNumTilesPerDigBox;
 		}
 		
+		/**
+		 * Picks a random dig box row.
+		 */
 		private function randomYInRange():uint {
 			var tmpY:uint = Math.random()*heightInDigBoxes;
 			return tmpY*kNumTilesPerDigBox;
 		}
 		
 		/**
-		 * Internal
-		 * 
-		 * Used to pick the first point in the dig.
-		 * 
+		 * Picks a random dig box.
 		 */
 		private function randomPointInRange():FlxPoint {
 			var tmpX:uint = randomXInRange();
 			var tmpY:uint = randomYInRange();
 			var tmpPoint:FlxPoint = new FlxPoint(tmpX,tmpY);
 			return tmpPoint;
+		}
+		
+		private function putSpawnInAnyEmpty(tmpArray:Array,tmpSpawn:uint):void {
+			var tmpPoint:FlxPoint = randomPointInRange();
+			var tmpIndex:uint = arrayIndexForDigBoxCoordsCenter(tmpPoint.x,tmpPoint.y);
+			if (tmpArray[tmpIndex] == kSpawnFuncEmpty) {
+				tmpArray[tmpIndex] = tmpSpawn;
+			} else {
+				putSpawnInAnyEmpty(tmpArray,tmpSpawn);
+			}
 		}
 		
 		private function putSpawnAtPointInArray(tmpArray:Array,tmpSpawn:uint,tmpPoint:FlxPoint):void {
@@ -283,29 +284,33 @@ package
 			while (returnPoint == null) {
 								
 				var randomDir:uint = Math.random()*5;
+								
 				// up
 				if (randomDir == 0) {
-					if (tmpPoint.y - kNumTilesPerDigBox > 0) {
+					if (tmpPoint.y - kNumTilesPerDigBox >= 0) {
 						returnPoint = new FlxPoint(tmpPoint.x,tmpPoint.y - kNumTilesPerDigBox);
 					}
 				}
 				// down
-				if (randomDir == 1) {
+				else if (randomDir == 1) {
 					if (tmpPoint.y + kNumTilesPerDigBox < heightInTiles) {
 						returnPoint = new FlxPoint(tmpPoint.x,tmpPoint.y + kNumTilesPerDigBox);
 					}
 				}
 				// left
-				if (randomDir == 2) {
-					if (tmpPoint.x - kNumTilesPerDigBox > 0) {
+				else if (randomDir == 2) {
+					if (tmpPoint.x - kNumTilesPerDigBox >= 0) {
 						returnPoint = new FlxPoint(tmpPoint.x - kNumTilesPerDigBox,tmpPoint.y);
 					}
 				}
 				// right
-				if (randomDir == 3) {
+				else if (randomDir == 3) {
 					if (tmpPoint.x + kNumTilesPerDigBox < widthInTiles) {
 						returnPoint = new FlxPoint(tmpPoint.x + kNumTilesPerDigBox,tmpPoint.y);
 					}
+				}
+				else {
+					FlxG.log("ERROR: randomDir == "+randomDir);
 				}
 				
 				if (isPointAlreadyDugInArray(returnPoint,tmpArray)) {

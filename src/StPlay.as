@@ -34,8 +34,10 @@ package
 		
 		private function initFunctionalLevel():void {
 			lvlFunc = Glob.leveler.levelFunc;
-			GLeveler.center(lvlFunc);
+			//GLeveler.center(lvlFunc);
 			if (Glob.kDebugOn) {add(lvlFunc);}
+			FlxG.worldBounds.width = lvlFunc.width;
+			FlxG.worldBounds.height = lvlFunc.height;
 		}
 		
 		private function addWalls():void {

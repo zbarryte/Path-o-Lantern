@@ -14,6 +14,7 @@ package
 		public function StMenu()
 		{
 			super();
+			
 		}
 		
 		override protected function createObjects():void {

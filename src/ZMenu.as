@@ -22,6 +22,8 @@ package
 		 */
 		public function addButton(tmpBtn:ZButton):void {
 			if (isEmpty()) {tmpBtn.curse()}
+			tmpBtn.scrollFactor.x = 0;
+			tmpBtn.scrollFactor.y = 0;
 			add(tmpBtn);
 		}
 		
