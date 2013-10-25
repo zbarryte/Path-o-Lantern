@@ -101,6 +101,13 @@ package
 		}
 		
 		/**
+		 * Max number of digs made in the walls.
+		 */
+		private function get maxDigs():uint {
+			return widthInDigBoxes*heightInDigBoxes;
+		}
+		
+		/**
 		 * Internal
 		 * 
 		 * Modifies the array to spec.
@@ -116,17 +123,20 @@ package
 			var tmpPtArray:Array;
 			
 			// dig this many times
-			var tmpMaxDigs:uint = widthInDigBoxes*heightInDigBoxes/2.0; // this is arbitrary
-			for (var i:uint = 0; i < tmpMaxDigs; i++) {
+			for (var i:uint = 0; i < maxDigs; i++) {
 				tmpPtArray = nextRandomDigPointInRange(tmpPoint,tmpArray);
 				tmpPoint = tmpPtArray[0];
 				tmpNextPoint = tmpPtArray[1];
 				putSpawnPointsBetweenCenterPointsInArray(tmpArray,kSpawnFuncEmpty,tmpPoint,tmpNextPoint);
-				var tmpSpawn:uint = (i >= tmpMaxDigs-1) ? kSpawnFuncHouse : kSpawnFuncEmpty;
+				var tmpSpawn:uint = (i >= maxDigs-1) ? kSpawnFuncHouse : kSpawnFuncEmpty;
 				putSpawnAtPointInArray(tmpArray,tmpSpawn,tmpNextPoint);
 				//putSpawnAtPointInArray(tmpArray,kSpawnFuncEmpty,tmpNextPoint);
 				tmpPoint = tmpNextPoint;
 			}
+			
+			
+			putSpawnAtPointInArray(tmpArray,kSpawnFuncHouse,new FlxPoint(0,0));
+			
 			/*
 			tmpPtArray = nextRandomDigPointInRange(tmpPoint,tmpArray);
 			tmpPoint = tmpPtArray[0];
@@ -272,7 +282,7 @@ package
 			
 			while (returnPoint == null) {
 								
-				var randomDir:uint = Math.random()*4;
+				var randomDir:uint = Math.random()*5;
 				// up
 				if (randomDir == 0) {
 					if (tmpPoint.y - kNumTilesPerDigBox > 0) {
