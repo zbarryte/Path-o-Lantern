@@ -9,6 +9,7 @@ package
 	{
 		private var isControllable:Boolean;
 		private var isPlayable:Boolean;
+		private var isUpdatable:Boolean;
 		
 		public function ZState()
 		{
@@ -28,6 +29,7 @@ package
 			
 			resume();
 			enableControls();
+			enableUpdate();
 		}
 		
 		/**
@@ -86,6 +88,8 @@ package
 		 * Overriding this function will obfuscate the logic unless you call <code>super</code>
 		 */
 		override public function update():void {
+			if (!isUpdatable) {return;}
+			
 			if (isPlayable) {
 				super.update();
 				updatePlay();
@@ -128,6 +132,20 @@ package
 				FlxG.switchState(new tmpClass());
 			};
 			FlxG.camera.fade(tmpColor,tmpDuration,tmpCallback);
+		}
+		
+		/**
+		 * Call to allow updating in general
+		 */
+		protected function enableUpdate():void {
+			isUpdatable = true;
+		}
+		
+		/**
+		 * Call to stop updating in general
+		 */
+		protected function disableUpdate():void {
+			isUpdatable = false;
 		}
 	}
 }

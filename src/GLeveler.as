@@ -11,20 +11,30 @@ package
 		public static const kTileLength:uint = 16;
 		
 		public var lvlNum:uint;
-		private const lvlNumTopCap:uint = 22;
+		//private const lvlNumTopCap:uint = 22;
+		private const lvlNumTopCap:uint = 0;
 		private function get lvlPercentageToMaxDifficulty():Number {
-			if (lvlNum >= lvlNumTopCap) {return 1.0;}
-			return 1.0 - Number(lvlNumTopCap - lvlNum)/Number(lvlNumTopCap);
+			if (lvlNum > lvlNumTopCap) {return 1.0;}
+			var tmpVal:Number = 1.0 - Number(lvlNumTopCap - lvlNum)/Number(lvlNumTopCap);
+			return tmpVal;
 		}
+		
+		/*
+		public function log():void {
+			FlxG.log(lvlPercentageToMaxDifficulty);
+		}
+		*/
 		
 		public static const kArraySpawnPumpkin:Array = [kSpawnFuncPumpkin];
 		public static const kArraySpawnWall:Array = [kSpawnFuncWall];
 		public static const kArraySpawnHouse:Array = [kSpawnFuncHouse];
+		public static const kArraySpawnHorror:Array = [kSpawnFuncHorror];
 		
 		private static const kSpawnFuncEmpty:uint = 2;
 		private static const kSpawnFuncWall:uint = 3;
 		private static const kSpawnFuncPumpkin:uint = 4;
 		private static const kSpawnFuncHouse:uint = 5;
+		private static const kSpawnFuncHorror:uint = 6;
 		
 		[Embed(source="assets/tileset_functional.png")] private const kTilesetFuncSheet:Class;
 		
@@ -33,21 +43,20 @@ package
 		 */
 		private const kNumTilesPerDigBox:uint = 5;
 		
-		private const kNumDigBoxesMax:uint = 10;
-		private const kNumDigBoxesMin:uint = 7;
+		private const kNumDigBoxesMax:uint = 22;
+		private const kNumDigBoxesMin:uint = 5;
 		
 		/**
 		 * Width or Height of tile map, measured in tiles.
 		 */
 		private function get numTilesAcross():uint {
-			return (kNumDigBoxesMin + (kNumDigBoxesMax - kNumDigBoxesMin)*lvlPercentageToMaxDifficulty)*kNumTilesPerDigBox;
+			return (kNumDigBoxesMin + int((kNumDigBoxesMax - kNumDigBoxesMin)*lvlPercentageToMaxDifficulty))*kNumTilesPerDigBox;
 		}
 		
 		/**
 		 * Width of tile map, measured in tiles.
 		 */
 		private function get widthInTiles():uint {
-			FlxG.log(numTilesAcross);
 			return numTilesAcross;
 		}
 		
@@ -105,7 +114,12 @@ package
 		 * Max number of digs made in the walls.
 		 */
 		private function get maxDigs():uint {
-			return widthInDigBoxes*heightInDigBoxes;
+			return widthInDigBoxes*heightInDigBoxes*0.7;
+		}
+		
+		private const kNumHorrorsMax:uint = 10;
+		private function get numHorrors():uint {
+			return lvlPercentageToMaxDifficulty*kNumHorrorsMax;
 		}
 		
 		/**
@@ -127,12 +141,18 @@ package
 				tmpPoint = tmpPtArray[0];
 				tmpNextPoint = tmpPtArray[1];
 				putSpawnPointsBetweenCenterPointsInArray(tmpArray,kSpawnFuncEmpty,tmpPoint,tmpNextPoint);
-				putSpawnAtPointInArray(tmpArray,kSpawnFuncEmpty,tmpNextPoint);
+				var tmpSpawn:uint = (i >= maxDigs -1) ? kSpawnFuncHouse : kSpawnFuncEmpty;
+				
+				putSpawnAtPointInArray(tmpArray,tmpSpawn,tmpNextPoint);
 				tmpPoint = tmpNextPoint;
 			}
 			
+			for (var j:uint = 0; j < numHorrors; j++) {
+				putSpawnInAnyEmpty(tmpArray,kSpawnFuncHorror);
+			}
+			
 			putSpawnInAnyEmpty(tmpArray,kSpawnFuncPumpkin);
-			putSpawnInAnyEmpty(tmpArray,kSpawnFuncHouse);
+			//putSpawnInAnyEmpty(tmpArray,kSpawnFuncHouse);
 			
 			return tmpArray;
 		}
@@ -283,7 +303,7 @@ package
 			
 			while (returnPoint == null) {
 								
-				var randomDir:uint = Math.random()*5;
+				var randomDir:uint = Math.random()*4;
 								
 				// up
 				if (randomDir == 0) {

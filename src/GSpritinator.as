@@ -6,6 +6,7 @@ package
 		[Embed(source="assets/spr_pumpkin.png")] public static const kPumpkinSheet:Class;
 		[Embed(source="assets/spr_wall.png")] public static const kWallSheet:Class;
 		[Embed(source="assets/spr_house.png")] public static const kHouseSheet:Class;
+		[Embed(source="assets/spr_horror.png")] public static const kHorrorSheet:Class;
 		
 		public function GSpritinator()
 		{

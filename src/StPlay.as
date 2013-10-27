@@ -1,9 +1,10 @@
 package
 {
+	import org.flixel.FlxCamera;
 	import org.flixel.FlxG;
 	import org.flixel.FlxGroup;
 	import org.flixel.FlxTilemap;
-	import org.flixel.FlxCamera;
+	import org.flixel.FlxPoint;
 	
 	public class StPlay extends ZState
 	{
@@ -16,6 +17,8 @@ package
 		private var wallGroup:FlxGroup;
 		private var houseGroup:FlxGroup;
 		private var pumpkin:SprPumpkin;
+		private var darkness:SprDarkness;
+		private var horrorGroup:FlxGroup;
 		
 		public function StPlay()
 		{
@@ -25,12 +28,13 @@ package
 		override protected function createObjects():void {
 			initFunctionalLevel();
 			addWalls();
-			addHouse();
+			addHouses();
 			addPumpkin();
+			addDarkness();
+			addHorrors();
 			addPauseMenu();
 			setupCamera();
 		}
-		
 		
 		private function initFunctionalLevel():void {
 			lvlFunc = Glob.leveler.levelFunc;
@@ -45,7 +49,7 @@ package
 			add(wallGroup);
 		}
 		
-		private function addHouse():void {
+		private function addHouses():void {
 			houseGroup = GLeveler.groupFromSpawn(GLeveler.kArraySpawnHouse,SprHouse,lvlFunc);
 			add(houseGroup);
 		}
@@ -53,6 +57,16 @@ package
 		private function addPumpkin():void {
 			pumpkin = GLeveler.groupFromSpawn(GLeveler.kArraySpawnPumpkin,SprPumpkin,lvlFunc).members[0];
 			add(pumpkin);
+		}
+		
+		private function addDarkness():void {
+			darkness = new SprDarkness();
+			add(darkness);
+		}
+		
+		private function addHorrors():void {
+			horrorGroup = GLeveler.groupFromSpawn(GLeveler.kArraySpawnHorror,SprHorror,lvlFunc);
+			add(horrorGroup);
 		}
 		
 		private function addPauseMenu():void {
@@ -109,7 +123,10 @@ package
 		
 		override protected function updatePlay():void {
 			FlxG.collide(wallGroup,pumpkin);
+			FlxG.collide(wallGroup,horrorGroup);
 			checkForPumpkinOverlappingHouse();
+			moveHorrorsTowardsPumpkin();
+			drawHolesInDarkness();
 		}
 		
 		private function checkForPumpkinOverlappingHouse():void {
@@ -119,6 +136,19 @@ package
 					win();
 				}
 			}
+		}
+		
+		private function moveHorrorsTowardsPumpkin():void {
+			for (var i:uint = 0; i < horrorGroup.length; i++) {
+				var tmpHorror:SprHorror = horrorGroup.members[i];
+				tmpHorror.moveTowards(pumpkin);
+			}
+		}
+		
+		private function drawHolesInDarkness():void {
+			var tmpRadius:Number = 44; // arbitrary
+			darkness.fillHoles();
+			darkness.drawHoleAtNode(pumpkin,tmpRadius);
 		}
 		
 		override protected function updatePause():void
@@ -149,7 +179,9 @@ package
 		}
 		
 		private function win():void {
+			disableUpdate();
 			Glob.leveler.lvlNum ++;
+			//Glob.leveler.log();
 			switchToStateWithFade(StPlay,kFadeDuration,kFadeColor);
 		}
 	}
