@@ -3,8 +3,8 @@ package
 	import org.flixel.FlxCamera;
 	import org.flixel.FlxG;
 	import org.flixel.FlxGroup;
-	import org.flixel.FlxTilemap;
 	import org.flixel.FlxPoint;
+	import org.flixel.FlxTilemap;
 	
 	public class StPlay extends ZState
 	{
@@ -127,6 +127,8 @@ package
 			checkForPumpkinOverlappingHouse();
 			moveHorrorsTowardsPumpkin();
 			drawHolesInDarkness();
+			hideSomeHorrors();
+			shrinkPumpkinRadius();
 		}
 		
 		private function checkForPumpkinOverlappingHouse():void {
@@ -146,9 +148,29 @@ package
 		}
 		
 		private function drawHolesInDarkness():void {
-			var tmpRadius:Number = 44; // arbitrary
+			var tmpRadius:Number = pumpkin.radius;
 			darkness.fillHoles();
 			darkness.drawHoleAtNode(pumpkin,tmpRadius);
+		}
+		
+		private function hideSomeHorrors():void {
+			for (var i:uint = 0; i < horrorGroup.length; i++) {
+				var tmpHorror:SprHorror = horrorGroup.members[i];
+				if (horrorIsInPumpkinRadius(tmpHorror) || tmpHorror.isStationary()) {
+					tmpHorror.hide();
+				} else if (tmpHorror.isHidden()) {
+					tmpHorror.show();
+				}
+			}
+		}
+		
+		private function horrorIsInPumpkinRadius(tmpHorror:SprHorror):Boolean {
+			var distSq:Number = Math.pow(tmpHorror.x - pumpkin.x,2) + Math.pow(tmpHorror.y - pumpkin.y,2);
+			return distSq <= Math.pow(pumpkin.radius + tmpHorror.width,2);
+		}
+		
+		private function shrinkPumpkinRadius():void {
+			pumpkin.shrinkRadius();
 		}
 		
 		override protected function updatePause():void

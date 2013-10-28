@@ -20,9 +20,13 @@ package
 				tmpLabel.size = height/3.0;
 				tmpLabel.y = height/2.0 - tmpLabel.height/2.0;
 				add(tmpLabel);
+				tmpLabel.scrollFactor.x = 0;
+				tmpLabel.scrollFactor.y = 0;
 			}
 			
 			uncurse();
+			scrollFactor.x = 0;
+			scrollFactor.y = 0;
 		}
 		
 		/**

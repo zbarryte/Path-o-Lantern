@@ -117,7 +117,7 @@ package
 			return widthInDigBoxes*heightInDigBoxes*0.7;
 		}
 		
-		private const kNumHorrorsMax:uint = 10;
+		private const kNumHorrorsMax:uint = 22;
 		private function get numHorrors():uint {
 			return lvlPercentageToMaxDifficulty*kNumHorrorsMax;
 		}

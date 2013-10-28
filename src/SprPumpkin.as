@@ -4,6 +4,10 @@ package
 	
 	public class SprPumpkin extends ZNode
 	{
+		private const kRadiusMax:Number = 88;
+		protected var _radius:Number;
+		private const kRadiusIncrement:Number = 0.022;
+		
 		private const kMoveAccel:Number = GLeveler.kTileLength*44;
 		private const kDrag:Number = kMoveAccel;
 		private const kVelMax:Number = GLeveler.kTileLength*11;
@@ -21,6 +25,8 @@ package
 			drag.y = kDrag;
 			maxVelocity.x = kVelMax;
 			maxVelocity.y = kVelMax;
+			
+			_radius = kRadiusMax;
 		}
 		
 		override protected function updateMechanics():void {			
@@ -65,6 +71,14 @@ package
 		
 		public function moveDown():void {
 			isDown = true;
+		}
+		
+		public function get radius():Number {
+			return _radius; // arbitrary for now
+		}
+		
+		public function shrinkRadius():void {
+			_radius -= kRadiusIncrement;
 		}
 	}
 }

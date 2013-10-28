@@ -1,5 +1,7 @@
 package
 {	
+	import org.flixel.FlxG;
+	
 	public class SprHorror extends ZNode
 	{	
 		private const kMoveAccel:Number = GLeveler.kTileLength*2;
@@ -29,6 +31,22 @@ package
 			} else if (tmpNode.y > y) {
 				moveDown();
 			}
+			
+			/*
+			if (velocity.x == 0 && velocity.y == 0) {
+				visible = false;
+			} else {
+				visible = true;
+			}
+			*/
+		}
+		
+		public function hide():void {
+			visible = false;
+		}
+		
+		public function show():void {
+			visible = true;
 		}
 		
 		private function moveLeft():void {
@@ -45,6 +63,14 @@ package
 		
 		private function moveDown():void {
 			acceleration.y = kMoveAccel;
+		}
+		
+		public function isHidden():Boolean {
+			return !visible;
+		}
+		
+		public function isStationary():Boolean {
+			return (velocity.x == 0 && velocity.y == 0);
 		}
 	}
 }

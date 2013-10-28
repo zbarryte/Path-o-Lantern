@@ -3,6 +3,7 @@ package
 	public class Glob
 	{
 		public static const kDebugOn:Boolean = true;
+		//public static const kDebugOn:Boolean = false;
 		
 		public static var controller:GController = new GController();
 		public static var audioHandler:GAudioHandler = new GAudioHandler();
