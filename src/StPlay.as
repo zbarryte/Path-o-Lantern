@@ -29,8 +29,8 @@ package
 			initFunctionalLevel();
 			addWalls();
 			addHouses();
-			addPumpkin();
 			addDarkness();
+			addPumpkin();
 			addHorrors();
 			addPauseMenu();
 			setupCamera();
@@ -156,7 +156,7 @@ package
 		private function hideSomeHorrors():void {
 			for (var i:uint = 0; i < horrorGroup.length; i++) {
 				var tmpHorror:SprHorror = horrorGroup.members[i];
-				if (horrorIsInPumpkinRadius(tmpHorror) || tmpHorror.isStationary()) {
+				if (pumpkin.radius == 0 || horrorIsInPumpkinRadius(tmpHorror)){// || tmpHorror.isStationary()) {
 					tmpHorror.hide();
 				} else if (tmpHorror.isHidden()) {
 					tmpHorror.show();

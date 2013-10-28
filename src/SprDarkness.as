@@ -29,8 +29,12 @@ package
 			
 			var tmpGfx:Graphics = FlxG.flashGfx;
 			tmpGfx.clear();
-			tmpGfx.beginFill(0xffffff,1);
+			tmpGfx.beginFill(0xffffff,0.5);
 			tmpGfx.drawCircle(tmpPoint.x,tmpPoint.y,tmpRadius);
+			tmpGfx.beginFill(0xffffff,0.75);
+			tmpGfx.drawCircle(tmpPoint.x,tmpPoint.y,tmpRadius*0.97);
+			tmpGfx.beginFill(0xffffff,1);
+			tmpGfx.drawCircle(tmpPoint.x,tmpPoint.y,tmpRadius*0.84);
 			tmpGfx.endFill();
 			
 			_pixels.draw(FlxG.flashGfxSprite);

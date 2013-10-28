@@ -79,6 +79,9 @@ package
 		
 		public function shrinkRadius():void {
 			_radius -= kRadiusIncrement;
+			if (_radius <= 0) {
+				_radius = 0;
+			}
 		}
 	}
 }

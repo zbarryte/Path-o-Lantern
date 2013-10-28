@@ -4,19 +4,30 @@ package
 	
 	public class SprHorror extends ZNode
 	{	
-		private const kMoveAccel:Number = GLeveler.kTileLength*2;
+		private const kMoveAccel:Number = GLeveler.kTileLength;
 		private const kDrag:Number = kMoveAccel;
-		private const kVelMax:Number = GLeveler.kTileLength*9;
+		private const kVelMax:Number = GLeveler.kTileLength*(1 + Math.random()*1);
+		
+		private const kAnimBlink:String = "kAnimBlink";
+		
+		private var blinkTimer:Number;
+		private const kBlinkPeriod:Number = 2.2 + Math.random()*2;
 		
 		public function SprHorror(tmpX:Number=0, tmpY:Number=0, tmpSimpleGraphic:Class=null)
 		{
-			super(tmpX, tmpY, GSpritinator.kHorrorSheet);
+			super(tmpX, tmpY);
+			loadGraphic(GSpritinator.kHorrorSheet,true,false,16,16);
 			
 			drag.x = kDrag;
 			drag.y = kDrag;
 			
 			maxVelocity.x = kVelMax;
 			maxVelocity.y = kVelMax;
+			
+			frame = 0;
+			addAnimation(kAnimBlink,[1,2,3,0],10,false);
+			
+			resetBlinkTimer();
 		}
 		
 		public function moveTowards(tmpNode:ZNode):void {
@@ -31,14 +42,6 @@ package
 			} else if (tmpNode.y > y) {
 				moveDown();
 			}
-			
-			/*
-			if (velocity.x == 0 && velocity.y == 0) {
-				visible = false;
-			} else {
-				visible = true;
-			}
-			*/
 		}
 		
 		public function hide():void {
@@ -71,6 +74,26 @@ package
 		
 		public function isStationary():Boolean {
 			return (velocity.x == 0 && velocity.y == 0);
+		}
+		
+		override public function update():void {
+			super.update();
+			
+			blinkTimer += FlxG.elapsed;
+			if (blinkTimer >= kBlinkPeriod) {
+				resetBlinkTimer();
+				maybeBlink();
+			}
+		}
+		
+		private function resetBlinkTimer():void {
+			blinkTimer = 0;
+		}
+		
+		private function maybeBlink():void {
+			if (isStationary() && Math.random()*3 > 1.5) {
+				play(kAnimBlink);
+			}
 		}
 	}
 }
