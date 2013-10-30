@@ -8,6 +8,8 @@ package
 	
 	public class GLeveler
 	{
+		public var points:uint;
+		
 		public static const kTileLength:uint = 16;
 		
 		public var lvlNum:uint;
@@ -29,6 +31,7 @@ package
 		public static const kArraySpawnWall:Array = [kSpawnFuncWall];
 		public static const kArraySpawnHouse:Array = [kSpawnFuncHouse];
 		public static const kArraySpawnHorror:Array = [kSpawnFuncHorror];
+		public static const kArraySpawnCandy:Array = [kSpawnFuncHorror,kSpawnFuncEmpty];
 		
 		private static const kSpawnFuncEmpty:uint = 2;
 		private static const kSpawnFuncWall:uint = 3;
@@ -92,6 +95,7 @@ package
 		 */
 		public function reset():void {
 			lvlNum = 0;
+			points = 0;
 		}
 		
 		/**

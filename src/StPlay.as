@@ -5,11 +5,12 @@ package
 	import org.flixel.FlxGroup;
 	import org.flixel.FlxPoint;
 	import org.flixel.FlxTilemap;
+	import org.flixel.FlxText;
 	
 	public class StPlay extends ZState
 	{
 		private const kFadeDuration:Number = 0.22;
-		private const kFadeColor:uint = 0xffff4444;
+		private const kFadeColor:uint = 0xff000000;
 		
 		private var mnuPause:ZMenu;
 		
@@ -19,8 +20,15 @@ package
 		private var pumpkin:SprPumpkin;
 		private var darkness:SprDarkness;
 		private var horrorGroup:FlxGroup;
+		private var candyGroup:FlxGroup;
+		private var score:SprScore;
+		private var hint:SprHint;
 		
+		private var hintIfNotMovingTimer:ZTimer;
 		private var lightTimer:ZTimer;
+		
+		private var isDead:Boolean;
+		private var deathText:FlxText;
 		
 		public function StPlay()
 		{
@@ -30,13 +38,17 @@ package
 		override protected function createObjects():void {
 			initFunctionalLevel();
 			addWalls();
-			addHouses();
 			addDarkness();
-			addPumpkin();
 			addHorrors();
+			addCandy();
+			addHouses();
+			addPumpkin();
+			addScore();
 			addPauseMenu();
+			addDeathText();
 			setupCamera();
 			setupLightTimer();
+			setupHintIfNotMovingTimer();
 		}
 		
 		private function initFunctionalLevel():void {
@@ -57,6 +69,11 @@ package
 			add(houseGroup);
 		}
 		
+		private function addCandy():void {
+			candyGroup = GLeveler.groupFromSpawn(GLeveler.kArraySpawnCandy,SprCandy,lvlFunc);
+			add(candyGroup);
+		}
+		
 		private function addPumpkin():void {
 			pumpkin = GLeveler.groupFromSpawn(GLeveler.kArraySpawnPumpkin,SprPumpkin,lvlFunc).members[0];
 			add(pumpkin);
@@ -72,6 +89,14 @@ package
 			add(horrorGroup);
 		}
 		
+		private function addScore():void {
+			score = new SprScore();
+			score.placeFarTop();
+			score.placeFarLeft();
+			score.score = Glob.leveler.points;
+			add(score);
+		}
+		
 		private function addPauseMenu():void {
 			mnuPause = new ZMenu();
 			
@@ -81,7 +106,7 @@ package
 			var callbackContinue:Function = function():void {
 				resume();
 			};
-			var txtContinue:String = "Continue";
+			var txtContinue:String = "CONTINUE";
 			var btnContinue:BtnBasic = new BtnBasic(callbackContinue,txtContinue);
 			btnContinue.centerX();
 			btnContinue.placeAtScreenYPercentage(0.44);
@@ -99,6 +124,20 @@ package
 			add(mnuPause);
 		}
 		
+		private function addDeathText():void {
+			deathText = new FlxText(0,0,FlxG.width);
+			deathText.y = FlxG.height/2.0;
+			deathText.alignment = "center";
+			deathText.scale.x = 2;
+			deathText.scale.y = 2;
+			deathText.color = 0xffff8800;
+			deathText.shadow = 0xff000000;
+			add(deathText);
+			deathText.scrollFactor.x = 0;
+			deathText.scrollFactor.y = 0;
+			deathText.visible = false;
+		}
+		
 		private function setupCamera():void {
 			FlxG.camera.follow(pumpkin,FlxCamera.STYLE_TOPDOWN);
 		}
@@ -107,8 +146,20 @@ package
 			var tmpEvent:Function = function():void {
 				pumpkin.shrinkRadius();
 			};
-			lightTimer = new ZTimer(5.0,tmpEvent,true,true);
+			lightTimer = new ZTimer(5.0,tmpEvent);
 			add(lightTimer);
+		}
+		
+		private function setupHintIfNotMovingTimer():void {
+			
+			hint = new SprHint();
+			add(hint);
+			
+			var tmpEvent:Function = function():void {
+				hint.show();
+			};
+			hintIfNotMovingTimer = new ZTimer(6.0,tmpEvent);
+			add(hintIfNotMovingTimer);
 		}
 		
 		override protected function updateControls():void
@@ -134,12 +185,14 @@ package
 		
 		override protected function updatePlay():void {
 			FlxG.collide(wallGroup,pumpkin);
-			FlxG.collide(wallGroup,horrorGroup);
+			if (pumpkin.radius != 0) {FlxG.collide(wallGroup,horrorGroup);}
 			checkForPumpkinOverlappingHouse();
 			moveHorrorsTowardsPumpkin();
 			drawHolesInDarkness();
 			hideSomeHorrors();
 			checkForPumpkinOverlappedByHorror();
+			checkForPumpkinOverlappingCandy();
+			checkIfHintShouldBeReset();
 			//shrinkPumpkinRadius();
 		}
 		
@@ -210,6 +263,38 @@ package
 			}
 		}
 		
+		private function checkForPumpkinOverlappingCandy():void {
+			var tmpRemoveCandyGroup:FlxGroup = new FlxGroup();
+			for (var i:uint = 0; i < candyGroup.length; i++) {
+				var tmpCandy:SprCandy = candyGroup.members[i];
+				if (tmpCandy.alive && pumpkin.overlaps(tmpCandy)) {
+					increaseScore();
+					tmpCandy.kill();
+					//tmpRemoveCandyGroup.add(tmpCandy);
+				}
+			}
+			/*
+			for (var j:uint = 0; j < tmpRemoveCandyGroup.length; j++) {
+				var tmpRemoveCandy:SprCandy = tmpRemoveCandyGroup.members[j];
+				candyGroup.remove(tmpRemoveCandy);
+			}*/
+		}
+		
+		private function increaseScore():void {
+			Glob.leveler.points ++;
+			score.score = Glob.leveler.points;
+		}
+		
+		private function checkIfHintShouldBeReset():void {
+			var tmpHeightOffset:Number = 2.2;
+			hint.x = pumpkin.x + pumpkin.width/2.0 - hint.width/2.0;
+			hint.y = pumpkin.y - hint.height - tmpHeightOffset;
+			if (pumpkin.velocity.x != 0 || pumpkin.velocity.y != 0) {
+				hintIfNotMovingTimer.reset();
+				hint.hide();
+			}
+		}
+		
 		override protected function updatePause():void
 		{
 			if (Glob.controller.justPressed(GController.pause)) {
@@ -245,9 +330,30 @@ package
 		}
 		
 		private function lose():void {
-			disableUpdate();
-			FlxG.log("LOSE");
+			isDead = true;
+			deathText.visible = true;
+			deathText.text = "YOU ARE DEAD.\nAND YOU ONLY GOT "+Glob.leveler.points+" PIECE"+(Glob.leveler.points == 0 ? "" : "S")+" OF CANDY.";
+		}
+		
+		private function continueFromDeath():void {
+			if (Glob.highScore < Glob.leveler.points) {
+				Glob.highScore = Glob.leveler.points;
+			}
 			switchToStateWithFade(StMenu,kFadeDuration,kFadeColor);
+		}
+		
+		override public function update():void {
+			if (isDead) {
+				deathUpdate();
+				return;
+			}
+			super.update();
+		}
+		
+		private function deathUpdate():void {
+			if (Glob.controller.justPressed(GController.select)) {
+				continueFromDeath();
+			}
 		}
 	}
 }

@@ -113,5 +113,21 @@ package
 			centerX();
 			centerY();
 		}
+		
+		public function placeFarLeft():void {
+			x = 0;
+		}
+		
+		public function placeFarRight():void {
+			x = FlxG.width - width;
+		}
+		
+		public function placeFarTop():void {
+			y = 0;
+		}
+		
+		public function placeFarBottom():void {
+			y = FlxG.height - height;
+		}
 	}
 }

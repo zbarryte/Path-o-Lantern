@@ -1,6 +1,7 @@
 package
 {
 	import org.flixel.FlxG;
+	import org.flixel.FlxSprite;
 	
 	public class SprPumpkin extends ZNode
 	{
@@ -20,11 +21,18 @@ package
 		public function SprPumpkin(tmpX:Number=0,tmpY:Number=0)
 		{
 			super(tmpX,tmpY,GSpritinator.kPumpkinSheet);
+			alpha = 0;
 			
 			drag.x = kDrag;
 			drag.y = kDrag;
 			maxVelocity.x = kVelMax;
 			maxVelocity.y = kVelMax;
+			
+			var tmpBody:FlxSprite = new FlxSprite();
+			tmpBody.loadGraphic(GSpritinator.kPumpkinBodySheet);
+			tmpBody.x = width/2.0 - tmpBody.width/2.0;
+			tmpBody.y = height/2.0 - tmpBody.height/2.0;
+			add(tmpBody);
 			
 			_radius = kRadiusMax;
 		}
@@ -79,7 +87,7 @@ package
 		
 		public function shrinkRadius():void {
 			_radius -= kRadiusIncrement;
-			if (_radius <= 0) {
+			if (_radius <= width) {
 				_radius = 0;
 			}
 		}

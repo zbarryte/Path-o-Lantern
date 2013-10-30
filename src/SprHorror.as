@@ -27,6 +27,13 @@ package
 			frame = 0;
 			addAnimation(kAnimBlink,[1,2,3,0],10,false);
 			
+			var tmpTentacles:ZNode = new ZNode();
+			tmpTentacles.loadGraphic(GSpritinator.kHorrorTentaclesSheet,true,false,16,16);
+			var tmpAnimTentaclate:String = "tmpAnimTentaclate";
+			tmpTentacles.addAnimation(tmpAnimTentaclate,[0,1,2,3],10,true);
+			tmpTentacles.play(tmpAnimTentaclate);
+			add(tmpTentacles);
+			
 			resetBlinkTimer();
 		}
 		

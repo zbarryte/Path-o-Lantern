@@ -2,15 +2,21 @@ package
 {
 	import org.flixel.FlxG;
 	import org.flixel.FlxGroup;
+	import org.flixel.FlxSprite;
 
 	public class ZMenu extends FlxGroup
 	{
 		protected var _buttonIndex:int;
+		protected var _overlay:FlxSprite;
 		
 		public function ZMenu()
 		{
 			super();
 			reset();
+			
+			_overlay = new FlxSprite();
+			_overlay.makeGraphic(FlxG.width,FlxG.height,0xff000000);
+			_overlay.alpha = 0.5;
 		}
 		
 		/**
@@ -95,6 +101,15 @@ package
 				var tmpBtn:ZButton = members[i];
 				tmpBtn.uncurse();
 			}
+		}
+		
+		/**
+		 * Overridden draw, draws the overlay under the buttons.
+		 * Do not override this in children, unless you call <code>super</code>
+		 */
+		override public function draw():void {
+			_overlay.draw();
+			super.draw();
 		}
 	}
 }

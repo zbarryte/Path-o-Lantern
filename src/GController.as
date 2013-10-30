@@ -9,8 +9,8 @@ package
 		public static const up:Array = ["UP","W"];
 		public static const down:Array = ["DOWN","S"];
 		
-		public static const pause:Array = ["ENTER","P","ESCAPE"];
-		public static const select:Array = ["SPACE"];
+		public static const pause:Array = ["P","ESCAPE"];
+		public static const select:Array = ["SPACE","ENTER"];
 		public static const back:Array = ["ESCAPE"];
 		
 		public static const curseBackwards:Array = left.concat(up);

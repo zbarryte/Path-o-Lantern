@@ -3,13 +3,13 @@ package
 	import org.flixel.FlxGame;
 	import flash.events.Event;
 	
-	[SWF(width="640", height="640", backgroundColor="#111122")]
+	[SWF(width="640", height="640", backgroundColor="#222222")]
 	
 	public class Main extends FlxGame
 	{
 		public function Main()
 		{
-			super(640,640,StTitle,1,60,60,true);
+			super(640,640,StMenu,1,60,60,true);
 			
 			forceDebugger = Glob.kDebugOn;
 		}
