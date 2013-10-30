@@ -11,8 +11,8 @@ package
 		public static const kTileLength:uint = 16;
 		
 		public var lvlNum:uint;
-		//private const lvlNumTopCap:uint = 22;
-		private const lvlNumTopCap:uint = 0;
+		private const lvlNumTopCap:uint = 22;
+		//private const lvlNumTopCap:uint = 0;
 		private function get lvlPercentageToMaxDifficulty():Number {
 			if (lvlNum > lvlNumTopCap) {return 1.0;}
 			var tmpVal:Number = 1.0 - Number(lvlNumTopCap - lvlNum)/Number(lvlNumTopCap);
@@ -106,6 +106,8 @@ package
 			
 			var tmpLvlCSV:String = FlxTilemap.arrayToCSV(lvlData,widthInTiles,true);
 			tmpTilemap.loadMap(tmpLvlCSV,kTilesetFuncSheet,kTileLength,kTileLength);
+			
+			FlxG.log(widthInDigBoxes);
 			
 			return tmpTilemap;
 		}

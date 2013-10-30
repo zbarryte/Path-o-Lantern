@@ -20,6 +20,8 @@ package
 		private var darkness:SprDarkness;
 		private var horrorGroup:FlxGroup;
 		
+		private var lightTimer:ZTimer;
+		
 		public function StPlay()
 		{
 			super();
@@ -34,6 +36,7 @@ package
 			addHorrors();
 			addPauseMenu();
 			setupCamera();
+			setupLightTimer();
 		}
 		
 		private function initFunctionalLevel():void {
@@ -100,6 +103,14 @@ package
 			FlxG.camera.follow(pumpkin,FlxCamera.STYLE_TOPDOWN);
 		}
 		
+		private function setupLightTimer():void {
+			var tmpEvent:Function = function():void {
+				pumpkin.shrinkRadius();
+			};
+			lightTimer = new ZTimer(5.0,tmpEvent,true,true);
+			add(lightTimer);
+		}
+		
 		override protected function updateControls():void
 		{				
 			if (Glob.controller.justPressed(GController.pause)) {
@@ -128,7 +139,8 @@ package
 			moveHorrorsTowardsPumpkin();
 			drawHolesInDarkness();
 			hideSomeHorrors();
-			shrinkPumpkinRadius();
+			checkForPumpkinOverlappedByHorror();
+			//shrinkPumpkinRadius();
 		}
 		
 		private function checkForPumpkinOverlappingHouse():void {
@@ -148,15 +160,18 @@ package
 		}
 		
 		private function drawHolesInDarkness():void {
-			var tmpRadius:Number = pumpkin.radius;
 			darkness.fillHoles();
-			darkness.drawHoleAtNode(pumpkin,tmpRadius);
+			darkness.drawHoleAtNode(pumpkin,pumpkin.radius);
+			for (var i:uint = 0; i < houseGroup.length; i++) {
+				var tmpHouse:SprHouse = houseGroup.members[i];
+				darkness.drawHoleAtNode(tmpHouse,tmpHouse.radius);
+			}
 		}
 		
 		private function hideSomeHorrors():void {
 			for (var i:uint = 0; i < horrorGroup.length; i++) {
 				var tmpHorror:SprHorror = horrorGroup.members[i];
-				if (pumpkin.radius == 0 || horrorIsInPumpkinRadius(tmpHorror)){// || tmpHorror.isStationary()) {
+				if (pumpkin.radius > 0 && (horrorIsInPumpkinRadius(tmpHorror) || horrorIsInHouseRadius(tmpHorror))){// || tmpHorror.isStationary()) {
 					tmpHorror.hide();
 				} else if (tmpHorror.isHidden()) {
 					tmpHorror.show();
@@ -164,13 +179,35 @@ package
 			}
 		}
 		
+		private function horrorIsInHouseRadius(tmpHorror:SprHorror):Boolean {
+			for (var i:uint = 0; i < houseGroup.length; i++) {
+				var tmpHouse:SprHouse = houseGroup.members[i];
+				var distSq:Number = Math.pow(tmpHorror.x - tmpHouse.x,2) + Math.pow(tmpHorror.y - tmpHouse.y,2);
+				if (distSq <= Math.pow(tmpHouse.radius + tmpHorror.width,2)) {
+					return true
+				}
+			}
+			return false;
+		}
+		
 		private function horrorIsInPumpkinRadius(tmpHorror:SprHorror):Boolean {
 			var distSq:Number = Math.pow(tmpHorror.x - pumpkin.x,2) + Math.pow(tmpHorror.y - pumpkin.y,2);
 			return distSq <= Math.pow(pumpkin.radius + tmpHorror.width,2);
 		}
 		
+		/*
 		private function shrinkPumpkinRadius():void {
 			pumpkin.shrinkRadius();
+		}
+		*/
+		
+		private function checkForPumpkinOverlappedByHorror():void {
+			for (var i:uint = 0; i < horrorGroup.length; i++) {
+				var tmpHorror:SprHorror = horrorGroup.members[i];
+				if (tmpHorror.visible && pumpkin.overlaps(tmpHorror)) {
+					lose();
+				}
+			}
 		}
 		
 		override protected function updatePause():void
@@ -205,6 +242,12 @@ package
 			Glob.leveler.lvlNum ++;
 			//Glob.leveler.log();
 			switchToStateWithFade(StPlay,kFadeDuration,kFadeColor);
+		}
+		
+		private function lose():void {
+			disableUpdate();
+			FlxG.log("LOSE");
+			switchToStateWithFade(StMenu,kFadeDuration,kFadeColor);
 		}
 	}
 }

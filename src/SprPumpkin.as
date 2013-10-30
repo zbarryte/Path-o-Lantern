@@ -6,7 +6,7 @@ package
 	{
 		private const kRadiusMax:Number = 88;
 		protected var _radius:Number;
-		private const kRadiusIncrement:Number = 0.022;
+		private const kRadiusIncrement:Number = kRadiusMax/10.0;
 		
 		private const kMoveAccel:Number = GLeveler.kTileLength*44;
 		private const kDrag:Number = kMoveAccel;

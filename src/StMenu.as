@@ -103,7 +103,7 @@ package
 			var tmpPoint:FlxPoint = new FlxPoint(mnu.button.x+mnu.button.width/2.0,mnu.button.y+mnu.button.height/2.0);
 			
 			darkness.fillHoles();
-			darkness.drawHole(tmpPoint,mnu.button.width/3.0);
+			darkness.drawHole(tmpPoint,222);
 		}
 	}
 }

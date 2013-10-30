@@ -27,13 +27,16 @@ package
 		
 		public function drawHole(tmpPoint:FlxPoint,tmpRadius:Number):void {
 			
+			tmpRadius += int(Math.random()*2);
+			var tmpAlphaOffset:Number = 0.22*int(Math.random()*1)
+			
 			var tmpGfx:Graphics = FlxG.flashGfx;
 			tmpGfx.clear();
-			tmpGfx.beginFill(0xffffff,0.5);
+			tmpGfx.beginFill(0xffffff,0.5-tmpAlphaOffset);
 			tmpGfx.drawCircle(tmpPoint.x,tmpPoint.y,tmpRadius);
-			tmpGfx.beginFill(0xffffff,0.75);
+			tmpGfx.beginFill(0xffffff,0.75-tmpAlphaOffset);
 			tmpGfx.drawCircle(tmpPoint.x,tmpPoint.y,tmpRadius*0.97);
-			tmpGfx.beginFill(0xffffff,1);
+			tmpGfx.beginFill(0xffffff,1-tmpAlphaOffset);
 			tmpGfx.drawCircle(tmpPoint.x,tmpPoint.y,tmpRadius*0.84);
 			tmpGfx.endFill();
 			
