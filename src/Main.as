@@ -10,7 +10,7 @@ package
 		public function Main()
 		{
 			super(640,640,StMenu,1,60,60,true);
-			
+			Glob.load();
 			forceDebugger = Glob.kDebugOn;
 		}
 		
