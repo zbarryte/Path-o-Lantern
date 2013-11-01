@@ -14,6 +14,8 @@ package
 		[Embed(source="assets/spr_house_roof.png")] public static const kHouseRoofSheet:Class;
 		[Embed(source="assets/spr_horror_tentacles.png")] public static const kHorrorTentaclesSheet:Class;
 		[Embed(source="assets/spr_controls.png")] public static const kControlsSheet:Class;
+		[Embed(source="assets/spr_pumpkin_eyes.png")] public static const kPumpkinEyesSheet:Class;
+		[Embed(source="assets/spr_pumpkin_legs.png")] public static const kPumpkinLegsSheet:Class;
 		
 		public function GSpritinator()
 		{

@@ -145,6 +145,10 @@ package
 		private function setupLightTimer():void {
 			var tmpEvent:Function = function():void {
 				pumpkin.shrinkRadius();
+				/*
+				for (var i:uint = 0; i < candyGroup.length; i++) {
+					var tmpCandy:SprCandy = candyGroup.members[i];
+				}*/
 			};
 			lightTimer = new ZTimer(5.0,tmpEvent);
 			add(lightTimer);
@@ -224,7 +228,7 @@ package
 		private function hideSomeHorrors():void {
 			for (var i:uint = 0; i < horrorGroup.length; i++) {
 				var tmpHorror:SprHorror = horrorGroup.members[i];
-				if (pumpkin.radius > 0 && (horrorIsInPumpkinRadius(tmpHorror) || horrorIsInHouseRadius(tmpHorror))){// || tmpHorror.isStationary()) {
+				if ((horrorIsInPumpkinRadius(tmpHorror) || horrorIsInHouseRadius(tmpHorror))){// || tmpHorror.isStationary()) {
 					tmpHorror.hide();
 				} else if (tmpHorror.isHidden()) {
 					tmpHorror.show();
@@ -244,6 +248,7 @@ package
 		}
 		
 		private function horrorIsInPumpkinRadius(tmpHorror:SprHorror):Boolean {
+			if (pumpkin.radius <= 0) {return false;}
 			var distSq:Number = Math.pow(tmpHorror.x - pumpkin.x,2) + Math.pow(tmpHorror.y - pumpkin.y,2);
 			return distSq <= Math.pow(pumpkin.radius + tmpHorror.width,2);
 		}
@@ -281,6 +286,7 @@ package
 		}
 		
 		private function increaseScore():void {
+			Glob.audioHandler.play(GAudioHandler.kCandy,true);
 			Glob.leveler.points ++;
 			score.score = Glob.leveler.points;
 		}
@@ -323,6 +329,7 @@ package
 		}
 		
 		private function win():void {
+			Glob.audioHandler.play(GAudioHandler.kHouse,true);
 			disableUpdate();
 			Glob.leveler.lvlNum ++;
 			//Glob.leveler.log();
@@ -330,6 +337,8 @@ package
 		}
 		
 		private function lose():void {
+			Glob.audioHandler.stop(GAudioHandler.kSongLevel);
+			Glob.audioHandler.play(GAudioHandler.kDeath);
 			isDead = true;
 			deathText.visible = true;
 			deathText.text = "YOU ARE DEAD.\nAND YOU ONLY GOT "+Glob.leveler.points+" PIECE"+(Glob.leveler.points == 0 ? "" : "S")+" OF CANDY.";

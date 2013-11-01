@@ -52,10 +52,12 @@ package
 		}
 		
 		public function hide():void {
+			Glob.audioHandler.play(GAudioHandler.kHorror,true);
 			visible = false;
 		}
 		
 		public function show():void {
+			Glob.audioHandler.play(GAudioHandler.kHorror,true);
 			visible = true;
 		}
 		

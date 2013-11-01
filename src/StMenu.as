@@ -22,6 +22,8 @@ package
 		{
 			super();
 			
+			Glob.audioHandler.play(GAudioHandler.kSongLevel);
+			
 		}
 		
 		override protected function createObjects():void {
@@ -143,9 +145,9 @@ package
 		}
 		
 		override protected function updateControls():void {
-			if (Glob.controller.justPressed(GController.pause)) {
+			/*if (Glob.controller.justPressed(GController.pause)) {
 				pause();
-			}
+			}*/
 			if (Glob.controller.justPressed(GController.select)) {
 				startGame();
 			}
@@ -192,6 +194,7 @@ package
 		}
 		
 		private function startGame():void {
+			Glob.audioHandler.play(GAudioHandler.kHouse);
 			Glob.leveler.reset();
 			switchToStateWithFade(StPlay,kFadeDuration,kFadeColor);
 		}

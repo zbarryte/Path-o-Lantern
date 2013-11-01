@@ -22,7 +22,7 @@ package
 				save.data.highScore = highScoreTmp;
 			}
 		}
-		private static var kHighScoreDefault:uint = 2;
+		private static var kHighScoreDefault:uint = 0;
 		private static var highScoreTmp:uint = kHighScoreDefault;
 		public static function get highScore():uint {
 			if (loaded) {
